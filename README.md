@@ -45,7 +45,7 @@
 
 
 ![Gradle](https://img.shields.io/badge/Gradle-8.x-02303A?style=for-the-badge&logo=gradle&logoColor=white)
-![Spring Dependency Management](https://img.shields.io/badge/Spring-Dependency%20Management-1.1.7-6DB33F?style=for-the-badge)
+
 
 
 ---
