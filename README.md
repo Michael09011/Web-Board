@@ -1,6 +1,6 @@
-# 🚀 Web5 - Spring Boot Web Application Sample
+# 🚀 Web-Board
 
-**Web5** is a comprehensive Spring Boot-based web application sample project. It serves as a robust baseline for modern web development, utilizing Server-Side Rendering (SSR) with Thymeleaf and providing essential modules for Member Management, Boards, and Notices.
+**Web-Board** is a comprehensive Spring Boot-based web application sample project. It serves as a robust baseline for modern web development, utilizing Server-Side Rendering (SSR) with Thymeleaf and providing essential modules for Member Management, Boards, and Notices.
 
 ---
 
