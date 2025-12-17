@@ -1,110 +1,82 @@
 # 🚀 Web5 - Spring Boot Web Application Sample
 
-Web5 is a Spring Boot–based web application sample project designed to provide a solid baseline for web development.
-It uses server-side rendering (SSR) with Thymeleaf and includes a basic structure for managing members, boards, and notices.
+**Web5** is a comprehensive Spring Boot-based web application sample project. It serves as a robust baseline for modern web development, utilizing Server-Side Rendering (SSR) with Thymeleaf and providing essential modules for Member Management, Boards, and Notices.
+
+---
 
 ## 📋 Requirements
+- [x] **Java 17** or higher
+- [x] **Gradle** (Using the included `gradlew` wrapper is highly recommended)
 
-Java 17 or higher
-
-Gradle
-(Using the included gradlew wrapper is recommended)
+---
 
 ## 🛠 Tech Stack
-Backend
 
-Language: Java 17 (Gradle Toolchain)
+### Backend
+- **Language**: Java 17 (Gradle Toolchain)
+- **Framework**: Spring Boot 3.5.3
+- **Security**: Spring Security 6
+- **Data Access**: Spring Data JPA (Hibernate)
+- **Database**: MySQL (`com.mysql:mysql-connector-j`)
 
-Framework: Spring Boot 3.5.3
+### Frontend & Utilities
+- **Rendering**: Thymeleaf (Server-Side Rendering)
+- **Security Integration**: Thymeleaf Extras SpringSecurity6
+- **Utilities**: Lombok, Spring Boot DevTools
+- **Build Tool**: Gradle (Dependency Management: 1.1.7)
 
-Web: spring-boot-starter-web
+---
 
-Template Engine
+## 🏗 Project Structure
 
-spring-boot-starter-thymeleaf
+```text
+src/
+ └─ main/
+     ├─ java/                # Java source code (Controller, Service, Repository)
+     └─ resources/
+         ├─ templates/       # Thymeleaf templates (.html)
+         ├─ static/          # Static resources (CSS, JS, Images)
+         ├─ application.properties  # Application configuration
+         └─ schema.sql       # Initial database schema
+uploads/                     # File storage (Local development/testing only)
+``` 
+---
 
-thymeleaf-extras-springsecurity6
+## 🚀 Getting Started (Windows)
 
-Security: spring-boot-starter-security
-
-Data Access: Spring Data JPA (Hibernate)
-
-Database: MySQL (com.mysql:mysql-connector-j)
-
-Utilities
-
-Lombok
-
-Spring Boot DevTools
-
-Build & Plugins
-
-Build Tool: Gradle
-
-Dependency Management
-
-io.spring.dependency-management (1.1.7)
-
-Testing
-
-JUnit Platform
-
-spring-boot-starter-test
-
-spring-security-test
-
-Frontend
-
-Rendering: Server-Side Rendering (Thymeleaf)
-
-Static Resources
-
-HTML, CSS, JavaScript
-
-src/main/resources/static
-
-🏗 Project Struc## 🏗 Project Structure 
-
-'''
-src/─ java/                         # Java source code
-    └─ resources/
-       ├─ templates/                # Thymeleaf templates
-       ├─ static/                   # CSS, JS, Images
-       └─ application.properties    # Application configuration
-
-uploads/        uploads/                             # File uploads (local dev/test only)
-'''
-
-
- (Windows)
-1. Build
+### 1. Build
+To compile the project and build the artifacts, run:
+```powershell
 ./gradlew.bat clean build
+```
 
-2. Run
+### 2. Run
+You can start the application using the Spring Boot Gradle plugin:
+```
+PowerShell
+
 ./gradlew.bat bootRun
-
-
-Or run the generated JAR:
+```
+Note: Or execute the generated JAR file directly after building:
+```
+PowerShell
 
 java -jar build/libs/<generated-jar-name>.jar
+```
+### 3. Test
+To execute the test suite, run:
+```
+PowerShell
 
-3. Test
 ./gradlew.bat test
+```
+---
 
-⚙️ Development Reference
+## ⚙️ Development Reference
 
-Configuration
-src/main/resources/application.properties
+* **Configuration**: All application settings and environment variables are located in `src/main/resources/application.properties`.
+* **Database Schema**: Initial table definitions and constraints can be found in `src/main/resources/schema.sql`.
+* **File Uploads**: Files uploaded during runtime are stored in the `/uploads` directory at the project root (specifically for local development and testing).
 
-Database Schema
-src/main/resources/schema.sql
-
-File Uploads
-Uploaded files are stored in the uploads/ directory at the project root
-(for local development and testing only)
-
-📝 Note
-
-Actual dependencies and versions are defined in build.gradle.
-
-It is recommended to keep dependencies up to date for security and performance.
+> [!IMPORTANT]
+> Actual dependencies and specific versions are defined in the `build.gradle` file. It is highly recommended to keep these dependencies up-to-date to ensure optimal security and performance.
