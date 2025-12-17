@@ -1,5 +1,7 @@
 # 🚀 Web-Board
-
+<p align="center">
+<img width="686" height="956" alt="스크린샷 2025-12-18 012026" src="https://github.com/user-attachments/assets/2229f494-f8c8-42d4-a0f7-a9fd26c63617" />
+</p>
 **Web-Board** is a comprehensive Spring Boot-based web application sample project. It serves as a robust baseline for modern web development, utilizing Server-Side Rendering (SSR) with Thymeleaf and providing essential modules for Member Management, Boards, and Notices.
 
 ---
