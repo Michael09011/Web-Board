@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title>공지사항 상세보기</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+</head>
+<body>
+    <div th:replace="~{header :: header}"></div>
+    <div th:replace="~{menu :: menu}"></div>
+    <main class="container my-5" style="max-width:700px;">
+        <h1 class="mb-4" th:text="${notice.noticeTitle}">제목</h1>
+        <div class="mb-2 text-muted">
+            <span th:text="${notice.member.memberName}">작성자</span> |
+            <span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}">작성일</span>
+        </div>
+        <hr>
+        <div class="mb-5" th:text="${notice.noticeContent}">내용</div>
+
+        <div class="d-flex gap-2">
+            <a th:href="@{/notice/list}" class="btn btn-secondary">목록</a>
+            <a th:href="@{'/notice/edit/' + ${notice.noticeNum}}" class="btn btn-warning"
+               sec:authorize="hasRole('ADMIN')">수정</a>
+            <form th:action="@{'/notice/delete/' + ${notice.noticeNum}}" method="post" style="display:inline;"
+                  sec:authorize="hasRole('ADMIN')">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?');">삭제</button>
+            </form>
+        </div>
+
+        <hr class="my-4">
+
+        <!-- 댓글 영역 -->
+        <div class="comments-section">
+            <h4>댓글</h4>
+            <!-- 댓글 작성 폼 -->
+            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <!-- 계정이 활성화된 경우 -->
+                <form id="comment-form" class="mb-4" th:if="${#authorization.expression('principal.enabled')}">
+                    <div class="input-group">
+                        <textarea id="comment-content" class="form-control" rows="3" placeholder="댓글을 입력하세요..."></textarea>
+                        <button type="submit" class="btn btn-primary">등록</button>
+                    </div>
+                </form>
+                <!-- 계정이 비활성화된 경우 -->
+                <div class="mb-4" th:if="${#authorization.expression('!principal.enabled')}">
+                    <div class="input-group">
+                        <textarea class="form-control" rows="3" placeholder="계정이 비활성화되어 댓글을 작성할 수 없습니다." disabled></textarea>
+                        <button type="button" class="btn btn-primary" disabled>등록</button>
+                    </div>
+                </div>
+            </div>
+            <!-- 댓글 목록 -->
+            <div id="comments-list"></div>
+        </div>
+    </main>
+    <div th:replace="~{footer :: footer}"></div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const noticeNum = /*[[${notice.noticeNum}]]*/ 0;
+        const currentMemberId = /*[[${#authentication.name}]]*/ null;
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadComments();
+
+            const commentForm = document.getElementById('comment-form');
+            if (commentForm) {
+                commentForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const content = document.getElementById('comment-content').value;
+                    if (!content.trim()) {
+                        alert('댓글 내용을 입력하세요.');
+                        return;
+                    }
+                    createComment(content);
+                });
+            }
+        });
+
+        async function createComment(content) {
+            try {
+                const response = await fetch(`/notice-comment/${noticeNum}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeader]: csrfToken
+                    },
+                    body: JSON.stringify({ content: content })
+                });
+
+                if (response.ok) {
+                    document.getElementById('comment-content').value = '';
+                    loadComments();
+                } else {
+                    console.error('댓글 작성 실패:', response.statusText);
+                    alert('댓글 작성에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('댓글 작성 중 오류 발생:', error);
+                alert('오류가 발생했습니다. 다시 시도해주세요.');
+            }
+        }
+
+        async function loadComments() {
+            try {
+                const response = await fetch(`/notice-comment/${noticeNum}`);
+                if (response.ok) {
+                    const comments = await response.json();
+                    displayComments(comments);
+                } else {
+                    console.error('댓글 로딩 실패:', response.statusText);
+                }
+            } catch (error) {
+                console.error('댓글 로딩 중 오류 발생:', error);
+            }
+        }
+
+        async function deleteComment(commentId) {
+            if (!confirm('정말 삭제하시겠습니까?')) return;
+
+            try {
+                const response = await fetch(`/notice-comment/${commentId}`, {
+                    method: 'DELETE',
+                    headers: { [csrfHeader]: csrfToken }
+                });
+
+                if (response.ok) {
+                    loadComments();
+                } else {
+                    console.error('댓글 삭제 실패:', response.statusText);
+                    alert('댓글 삭제에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('댓글 삭제 중 오류 발생:', error);
+                alert('오류가 발생했습니다. 다시 시도해주세요.');
+            }
+        }
+
+
+        function displayComments(comments) {
+            const commentsList = document.getElementById('comments-list');
+            commentsList.innerHTML = '';
+            if (comments.length === 0) {
+                commentsList.innerHTML = '<p>등록된 댓글이 없습니다.</p>';
+                return;
+            }
+
+            comments.forEach(comment => {
+                const commentEl = document.createElement('div');
+                commentEl.className = 'card mb-2';
+                commentEl.id = `comment-${comment.commentId}`;
+
+                let buttons = '';
+                const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
+                if (currentMemberId === comment.memberId || isAdmin) {
+                    buttons = `
+                        <div class="mt-2">
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteComment(${comment.commentId})">삭제</button>
+                        </div>
+                    `;
+                }
+
+                commentEl.innerHTML = `
+                    <div class="card-body">
+                        <p class="card-text">${comment.content}</p>
+                        <div class="text-muted small">
+                            <span>${comment.memberId}</span> |
+                            <span>${new Date(comment.createdDate).toLocaleString()}</span>
+                        </div>
+                        ${buttons}
+                    </div>
+                `;
+                commentsList.appendChild(commentEl);
+            });
+        }
+        /*]]>*/
+    </script>
+</body>
+</html>

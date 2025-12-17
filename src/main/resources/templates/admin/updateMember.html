@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html
+    lang="ko"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns="sec=http://www.thymeleaf.org/extras/spring-security"
+>
+<head>
+    <meta charset="UTF-8" />
+    <title>[관리자] 회원정보 수정</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .form-update {
+          max-width: 450px;
+          padding: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{header :: header}"></div>
+     <div th:replace="~{menu :: menu}"></div>
+
+    <main class="form-update w-100 m-auto">
+        <form th:action="@{/admin/members/update}" th:object="${member}" method="post">
+            <h1 class="h3 mb-3 fw-normal text-center">[관리자] 회원정보 수정</h1>
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="memberId" name="memberId" th:value="*{memberId}" readonly>
+                <label for="memberId">아이디</label>
+            </div>
+            
+            <div class="form-floating mb-2">
+                <input type="password" class="form-control" id="memberPassword" name="memberPassword" placeholder="비밀번호">
+                <label for="memberPassword">비밀번호 (변경 시에만 입력)</label>
+            </div>
+
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="memberName" name="memberName" th:value="*{memberName}" required>
+                <label for="memberName">이름</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="email" name="email" th:value="*{email}" required>
+                <label for="email">이메일</label>
+            </div>
+
+            <div class="form-floating mb-2">
+                <input type="text" class="form-control" id="phone" name="phone" th:value="*{phone}">
+                <label for="phone">전화번호</label>
+            </div>
+
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="address" name="address" th:value="*{address}">
+                <label for="address">주소</label>
+            </div>
+
+            <button class="btn btn-primary w-100 py-2" type="submit">수정 완료</button>
+            <a th:href="@{/admin/members}" class="btn btn-secondary w-100 py-2 mt-2">취소</a>
+        </form>
+    </main>
+
+    <div th:replace="~{footer :: footer}"></div>
+
+    <script>
+        document.getElementById('phone').addEventListener('input', function (e) {
+            let x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,4})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : x[1] + '-' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+    </script>
+</body>
+</html>
