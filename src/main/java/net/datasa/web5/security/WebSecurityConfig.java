@@ -34,6 +34,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/", // 메인 페이지 허용
@@ -49,7 +50,10 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                                 "/uploads/**",
                                 "/member/info",
                                 "/comment/**",
-                                "/legal/**"
+                                "/legal/**",
+                                "/board/upload", // 파일 업로드 경로 허용
+                                "/.well-known/**", // .well-known 경로 허용
+                                "/error" // 에러 페이지 경로 허용
                                )
                         .permitAll()
                         .anyRequest().authenticated())

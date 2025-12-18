@@ -3,7 +3,9 @@ package net.datasa.web5.controller;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -50,10 +52,13 @@ public class BoardController {
 
     @PostMapping("upload")
     @ResponseBody
-    public UploadFile upload(@RequestParam("file") MultipartFile file) {
+    public Map<String, String> upload(@RequestParam("file") MultipartFile file) {
         String savedFileName = fileService.saveFile(file, uploadPath);
         String url = "/board/media/" + savedFileName;
-        return new UploadFile(url);
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("url", url);
+        return response;
     }
 
     @GetMapping("media/{filename}")
@@ -140,7 +145,7 @@ public class BoardController {
 
     // 게시글 수정 처리
     @PostMapping("edit/{boardNum}")
-    public String edit(@PathVariable("boardNum") Integer boardNum,
+    public String edit(@PathVariable("boardNum") final Integer boardNum, // final 키워드 추가
                        @RequestParam("boardTitle") String boardTitle,
                        @RequestParam("boardContent") String boardContent,
                        @RequestParam(value = "deleteFileIds", required = false) List<Integer> deleteFileIds,

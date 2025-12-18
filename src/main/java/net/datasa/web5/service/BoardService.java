@@ -20,6 +20,7 @@ import net.datasa.web5.domain.entity.MemberEntity;
 import net.datasa.web5.domain.repository.BoardFileRepository;
 import net.datasa.web5.domain.repository.BoardRepository;
 import net.datasa.web5.domain.repository.CommentRepository;
+import net.datasa.web5.repository.ReportRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
     private final CommentRepository commentRepository;
+    private final ReportRepository reportRepository;
 
     public Page<BoardDTO> findAll(Pageable pageable) {
         Page<BoardEntity> boardEntities = boardRepository.findAllWithFiles(pageable);
@@ -47,9 +49,12 @@ public class BoardService {
         return boardRepository.findByIdWithMemberAndFiles(boardNum).orElseThrow();
     }
 
-
+    @Transactional
     public void delete(Integer boardNum) {
         BoardEntity board = boardRepository.findByIdWithMember(boardNum).orElseThrow();
+
+        // 관련 신고 데이터 삭제
+        reportRepository.deleteByBoard(board);
 
         // 파일 시스템에서 파일 삭제
         for (BoardFileEntity file : board.getFiles()) {
