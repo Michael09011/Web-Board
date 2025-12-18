@@ -12,6 +12,8 @@
     <script type="text/javascript" src="//code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
 </head>
 <body>
     <!-- 헤더 -->
@@ -45,10 +47,42 @@
 
     <script>
     $(document).ready(function() {
+        // Custom button for video upload
+        var videoUploadButton = function (context) {
+            var ui = $.summernote.ui;
+            var button = ui.button({
+                contents: '<i class="fas fa-video"></i>',
+                tooltip: '동영상 파일 업로드',
+                click: function () {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'file');
+                    input.setAttribute('accept', 'video/*');
+                    input.click();
+                    input.onchange = function () {
+                        var file = input.files[0];
+                        uploadVideo(file);
+                    };
+                }
+            });
+            return button.render();
+        }
+
         $('#boardContent').summernote({
             placeholder: '내용을 입력하세요',
             tabsize: 2,
             height: 300,
+            toolbar: [
+                ['style', ['style']],
+                ['font', ['bold', 'underline', 'clear']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['table', ['table']],
+                ['insert', ['link', 'picture', 'video', 'videoUpload']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            buttons: {
+                videoUpload: videoUploadButton
+            },
             callbacks: {
                 onImageUpload: function(files) {
                     for (let i = 0; i < files.length; i++) {
@@ -70,6 +104,28 @@
             contentType: false,
             success: function(data) {
                 $('#boardContent').summernote('insertImage', data.url);
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        });
+    }
+
+    function uploadVideo(file) {
+        let formData = new FormData();
+        formData.append("file", file);
+        $.ajax({
+            url: '/board/upload', // Using the same endpoint for video
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                var video = document.createElement('video');
+                video.src = data.url;
+                video.setAttribute('width', '100%');
+                video.setAttribute('controls', 'controls');
+                $('#boardContent').summernote('insertNode', video);
             },
             error: function(e) {
                 console.log(e);

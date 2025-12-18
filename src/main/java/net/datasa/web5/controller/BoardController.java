@@ -52,12 +52,12 @@ public class BoardController {
     @ResponseBody
     public UploadFile upload(@RequestParam("file") MultipartFile file) {
         String savedFileName = fileService.saveFile(file, uploadPath);
-        String url = "/board/image/" + savedFileName;
+        String url = "/board/media/" + savedFileName;
         return new UploadFile(url);
     }
 
-    @GetMapping("image/{filename}")
-    public ResponseEntity<Resource> getImage(@PathVariable String filename) throws MalformedURLException {
+    @GetMapping("media/{filename}")
+    public ResponseEntity<Resource> getMedia(@PathVariable String filename) throws MalformedURLException {
         Path filePath = Paths.get(uploadPath).resolve(filename).normalize();
         Resource resource = new UrlResource(filePath.toUri());
         if (!resource.exists()) {
